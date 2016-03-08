@@ -16,6 +16,7 @@ import java.util.Arrays;
 import java.util.Collection;
 import java.util.LinkedList;
 import java.util.List;
+import java.util.Properties;
 import java.util.concurrent.TimeUnit;
 import org.junit.After;
 import org.junit.AfterClass;
@@ -52,6 +53,7 @@ public abstract class AbstractCommandTest extends AbstractLocalRepositoryTest {
     private Writer commandWriter;
     private PlayCommand playCmd;
     protected WorkspaceStatusImpl wsStatus;
+    protected Properties globalProperties = new Properties();
 
     /**
      * @param kEngine
@@ -115,7 +117,7 @@ public abstract class AbstractCommandTest extends AbstractLocalRepositoryTest {
         Mockito.when( komodoShell.getShellDataLocation() ).thenReturn( _shellDataDirectory.toString() );
         Mockito.when( komodoShell.getShellPropertiesFile() ).thenReturn( "vdbbuilderShell.properties" );
 
-        this.wsStatus = new WorkspaceStatusImpl( super.getTransaction(), komodoShell );
+        this.wsStatus = new WorkspaceStatusImpl( super.getTransaction(), komodoShell, globalProperties );
         this.commandWriter = new StringWriter();
     }
 
@@ -144,6 +146,16 @@ public abstract class AbstractCommandTest extends AbstractLocalRepositoryTest {
 
         final String commandFilePath = cmdFile.getAbsolutePath();
         setup( commandFilePath );
+    }
+
+    protected void assertCommandsAvailable( final String... cmdNames ) throws Exception {
+        final Collection< String > available = Arrays.asList( this.wsStatus.getAvailableCommandNames() );
+
+        for ( final String name : cmdNames ) {
+            if ( !available.contains( name ) ) {
+                Assert.fail( "Command " + name + " should be available" );
+            }
+        }
     }
 
     protected void assertCommandsNotAvailable( final String... cmdNames ) throws Exception {
