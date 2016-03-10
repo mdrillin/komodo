@@ -54,7 +54,7 @@ public class ResetGlobalPropertyCommandTest extends AbstractCommandTest {
 
         // Check Context and property value
         assertEquals("/", wsStatus.getCurrentContextDisplayPath());
-        assertEquals(WorkspaceStatus.GLOBAL_PROPS.get(propertyName), wsStatus.getGlobalProperties().getProperty(propertyName));
+        assertEquals(WorkspaceStatus.GLOBAL_PROPS.get(propertyName), wsStatus.getGlobalProperties(false).getProperty(propertyName));
     }
 
     @Test
@@ -72,8 +72,8 @@ public class ResetGlobalPropertyCommandTest extends AbstractCommandTest {
 
         // Check Context and properties value
         assertEquals("/", wsStatus.getCurrentContextDisplayPath());
-        assertEquals(WorkspaceStatus.GLOBAL_PROPS.get(firstPropName), wsStatus.getGlobalProperties().getProperty(firstPropName));
-        assertEquals(WorkspaceStatus.GLOBAL_PROPS.get(secondPropName), wsStatus.getGlobalProperties().getProperty(secondPropName));
+        assertEquals(WorkspaceStatus.GLOBAL_PROPS.get(firstPropName), wsStatus.getGlobalProperties(false).getProperty(firstPropName));
+        assertEquals(WorkspaceStatus.GLOBAL_PROPS.get(secondPropName), wsStatus.getGlobalProperties(false).getProperty(secondPropName));
     }
 
     @Test
