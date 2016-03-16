@@ -50,7 +50,7 @@ public class CdCommandTest extends AbstractCommandTest {
         assertCommandResultOk( result );
 
     	// Check WorkspaceContext
-        String contextPath = wsStatus.getCurrentContextDisplayPath();
+        String contextPath = wsStatus.getCurrentContextDisplayPath(null);
         assertEquals("/", contextPath);
     }
 
@@ -60,7 +60,7 @@ public class CdCommandTest extends AbstractCommandTest {
         final CommandResult result = execute( commands );
         assertCommandResultOk( result );
 
-        String contextPath = wsStatus.getCurrentContextDisplayPath();
+        String contextPath = wsStatus.getCurrentContextDisplayPath(null);
         assertEquals("/workspace", contextPath);
     }
 
@@ -70,7 +70,7 @@ public class CdCommandTest extends AbstractCommandTest {
         final CommandResult result = execute( commands );
         assertCommandResultOk( result );
 
-        String contextPath = wsStatus.getCurrentContextDisplayPath();
+        String contextPath = wsStatus.getCurrentContextDisplayPath(null);
         assertEquals("/workspace", contextPath);
     }
 
