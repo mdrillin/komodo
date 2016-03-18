@@ -1,8 +1,8 @@
 ### Execute a command file
 
-This sample shows how to use the VDB Builder cli to execute a previously saved session command file.  You can create or edit existing command files to fully script the construction of your VDBs!  Use this sample as a starting point for working with your own VDBS.
+This document shows how to use the VDB Builder cli to execute a previously saved session command file.  You can create or edit existing command files to fully script the construction of your VDBs!  You can use this sample as a starting point for working with your own VDBS.
 
-You can use __tab completion__ to see the available commands options, or use __help commandName__ to see command details.
+Note that in __VDB Builder__, you can use __tab completion__ to see the available commands options, or use __help commandName__ to see command details.
 
 
 ### Requirements

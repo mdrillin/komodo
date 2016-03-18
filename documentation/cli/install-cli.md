@@ -1,6 +1,6 @@
 ### Install VDB Builder
 
-This article provides instructions for installing and launching the VDB Builder command line interface (cli).
+This document provides instructions for installing and launching the VDB Builder command line interface (cli).
 
 ### Installation options
 

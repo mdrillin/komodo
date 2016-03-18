@@ -1,0 +1,38 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<dataSourceSet>
+	<dataSource name="ExampleDS" jdbc="true">
+		<property name="track-statements">NOWARN</property>
+		<property name="connectable">false</property>
+		<property name="connection-url">jdbc:h2:mem:test;DB_CLOSE_DELAY=-1;DB_CLOSE_ON_EXIT=FALSE</property>
+		<property name="jndiName">java:/ExampleDS</property>
+		<property name="share-prepared-statements">false</property>
+		<property name="driverName">h2</property>
+		<property name="statistics-enabled">false</property>
+		<property name="validate-on-match">false</property>
+		<property name="allow-multiple-users">false</property>
+		<property name="password">myPassword</property>
+		<property name="user-name">joeUser</property>
+		<property name="use-fast-fail">false</property>
+		<property name="set-tx-query-timeout">false</property>
+		<property name="spy">false</property>
+	</dataSource>
+	<dataSource name="SalesforceDS" jdbc="false">
+		<property name="jndiName">java:/SalesforceDS</property>
+		<property name="pool-use-strict-min">false</property>
+		<property name="pad-xid">false</property>
+		<property name="password">myPassword</property>
+		<property name="use-fast-fail">false</property>
+		<property name="pool-prefill">false</property>
+		<property name="min-pool-size">0</property>
+		<property name="flush-strategy">FailingConnectionOnly</property>
+		<property name="no-recovery">false</property>
+		<property name="background-validation">false</property>
+		<property name="interleaving">false</property>
+		<property name="max-pool-size">20</property>
+		<property name="security-application">false</property>
+		<property name="no-tx-separate-pool">false</property>
+		<property name="className">org.teiid.resource.adapter.salesforce.SalesForceManagedConnectionFactory</property>
+		<property name="wrap-xa-resource">true</property>
+		<property name="username">joe@anywhere.com</property>
+	</dataSource>
+</dataSourceSet>
