@@ -1,8 +1,8 @@
 ### Create a VDB interactively
 
-This sample shows how to use the VDB Builder cli to create a new dynamic VDB interactively.  Use this sample as a starting point to create your own, more complex VDBS.
+This document shows how to use the VDB Builder cli to create a new dynamic VDB interactively.  You can use this as a starting point to create your own, more complex VDBS.
 
-You can use __tab completion__ to see the available commands options, or use __help commandName__ to see command details.
+Note that in __VDB Builder__, you can use __tab completion__ to see the available commands options, or use __help commandName__ to see command details.
 
 
 ### Requirements
