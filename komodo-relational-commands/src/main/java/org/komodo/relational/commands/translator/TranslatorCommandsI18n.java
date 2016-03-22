@@ -22,6 +22,8 @@ public final class TranslatorCommandsI18n extends I18n {
     public static String unsetTranslatorPropertyExamples;
     public static String unsetTranslatorPropertyHelp;
     public static String unsetTranslatorPropertyUsage;
+    
+    public static String cannotUnsetTranslatorType;
 
     static {
         final TranslatorCommandsI18n i18n = new TranslatorCommandsI18n();

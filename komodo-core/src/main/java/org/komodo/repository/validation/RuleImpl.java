@@ -465,6 +465,8 @@ public class RuleImpl extends ObjectImpl implements Rule {
                     // If rule does not have message or description for the locale, use a default.
                     if(StringUtils.isBlank(errorMsg)) {
                         errorMsg = Messages.getString( Messages.Validation.PATTERN_RULE_INVALID_NODE_NAME, ( Object[] )args );
+                    } else {
+                        errorMsg = kobject.getName(transaction) + " : " + errorMsg; //$NON-NLS-1$
                     }
                 }
 
@@ -514,6 +516,8 @@ public class RuleImpl extends ObjectImpl implements Rule {
             if( StringUtils.isBlank(errorMsg) ) {
                 args = new String[] { kobject.getName( transaction ), kobject.getAbsolutePath(), propName };
                 errorMsg = Messages.getString( Messages.Validation.REQUIRED_PROPERTY_NOT_FOUND, ( Object[] )args );
+            } else {
+                errorMsg = kobject.getName(transaction) + " : " + errorMsg; //$NON-NLS-1$
             }
             return new ResultImpl( kobject.getAbsolutePath(), getName( transaction ), getSeverity( transaction ), errorMsg );
         }
@@ -534,6 +538,8 @@ public class RuleImpl extends ObjectImpl implements Rule {
                     // If rule does not have message or description for the locale, use a default.
                     if(StringUtils.isBlank(errorMsg)) {
                         errorMsg = Messages.getString( Messages.Validation.PATTERN_RULE_INVALID_PROPERTY_VALUE, ( Object[] )args );
+                    } else {
+                        errorMsg = kobject.getName(transaction) + " : " + errorMsg; //$NON-NLS-1$
                     }
                 }
 
@@ -572,6 +578,8 @@ public class RuleImpl extends ObjectImpl implements Rule {
                                     // If rule does not have message or description for the locale, use a default.
                                     if(StringUtils.isBlank(errorMsg)) {
                                         errorMsg = Messages.getString( Messages.Validation.PROPERTY_RULE_VALUE_BELOW_MIN_VALUE, ( Object[] )args );
+                                    } else {
+                                        errorMsg = kobject.getName(transaction) + " : " + errorMsg; //$NON-NLS-1$
                                     }
                                 }
                             }
@@ -603,6 +611,8 @@ public class RuleImpl extends ObjectImpl implements Rule {
                                         // If rule does not have message or description for the locale, use a default.
                                         if(StringUtils.isBlank(errorMsg)) {
                                             errorMsg = Messages.getString( Messages.Validation.PROPERTY_RULE_VALUE_ABOVE_MAX_VALUE, ( Object[] )args );
+                                        } else {
+                                            errorMsg = kobject.getName(transaction) + " : " + errorMsg; //$NON-NLS-1$
                                         }
                                     }
                                 }
@@ -617,6 +627,8 @@ public class RuleImpl extends ObjectImpl implements Rule {
                             // If rule does not have message or description for the locale, use a default.
                             if(StringUtils.isBlank(errorMsg)) {
                                 errorMsg = Messages.getString( Messages.Validation.NUMBER_RULE_HAS_NO_VALUES, ( Object[] )args );
+                            } else {
+                                errorMsg = kobject.getName(transaction) + " : " + errorMsg; //$NON-NLS-1$
                             }
                         }
                     } catch ( final ParseException ex ) {
@@ -628,6 +640,8 @@ public class RuleImpl extends ObjectImpl implements Rule {
                         // If rule does not have message or description for the locale, use a default.
                         if(StringUtils.isBlank(errorMsg)) {
                             errorMsg = Messages.getString( Messages.Validation.NUMBER_RULE_NON_NUMERIC_VALUES, ( Object[] )args );
+                        } else {
+                            errorMsg = kobject.getName(transaction) + " : " + errorMsg; //$NON-NLS-1$
                         }
                     }
                 }
@@ -648,6 +662,8 @@ public class RuleImpl extends ObjectImpl implements Rule {
                                 // If rule does not have message or description for the locale, use a default.
                                 if(StringUtils.isBlank(errorMsg)) {
                                     errorMsg = Messages.getString( Messages.Validation.PROPERTY_RULE_REQUIRED_PROPERTY_NOT_FOUND, ( Object[] )args );
+                                } else {
+                                    errorMsg = kobject.getName(transaction) + " : " + errorMsg; //$NON-NLS-1$
                                 }
                                 break;
                             }
@@ -672,6 +688,8 @@ public class RuleImpl extends ObjectImpl implements Rule {
                                 // If rule does not have message or description for the locale, use a default.
                                 if(StringUtils.isBlank(errorMsg)) {
                                     errorMsg = Messages.getString( Messages.Validation.PROPERTY_RULE_ABSENT_PROPERTY_FOUND, ( Object[] )args );
+                                } else {
+                                    errorMsg = kobject.getName(transaction) + " : " + errorMsg; //$NON-NLS-1$
                                 }
                                 break;
                             }
@@ -696,6 +714,8 @@ public class RuleImpl extends ObjectImpl implements Rule {
                                 // If rule does not have message or description for the locale, use a default.
                                 if(StringUtils.isBlank(errorMsg)) {
                                     errorMsg = Messages.getString( Messages.Validation.RELATIONSHIP_RULE_REQUIRED_CHILD_NOT_FOUND, ( Object[] )args );
+                                } else {
+                                    errorMsg = kobject.getName(transaction) + " : " + errorMsg; //$NON-NLS-1$
                                 }
                                 break;
                             }
@@ -720,6 +740,8 @@ public class RuleImpl extends ObjectImpl implements Rule {
                                 // If rule does not have message or description for the locale, use a default.
                                 if(StringUtils.isBlank(errorMsg)) {
                                     errorMsg = Messages.getString( Messages.Validation.PROPERTY_RULE_ABSENT_CHILD_FOUND, ( Object[] )args );
+                                } else {
+                                    errorMsg = kobject.getName(transaction) + " : " + errorMsg; //$NON-NLS-1$
                                 }
                                 break;
                             }

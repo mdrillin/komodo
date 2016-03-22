@@ -49,7 +49,7 @@ public final class VdbValidationTest extends RelationalValidationTest {
     @Test
     public void shouldGetAllRules() throws Exception {
         final Rule[] rules = _repo.getValidationManager().getAllRules(getTransaction());
-        assertThat( rules.length, is( 42 ) );
+        assertThat( rules.length, is( 51 ) );
     }
 
     // ==============================================================================================
@@ -139,8 +139,9 @@ public final class VdbValidationTest extends RelationalValidationTest {
         VdbImport vdbImport = addVdbImport(vdb,"myImport");
 
         final Rule[] rules = _repo.getValidationManager().getRules(getTransaction(),vdbImport);
-        assertThat( rules.length, is( 1 ) );
-        assertThat( getRuleNames( rules ), hasItems( "default.importVdb.nodeName" ) );
+        assertThat( rules.length, is( 2 ) );
+        assertThat( getRuleNames( rules ), hasItems( "default.importVdb.nodeName",
+                                                     "default.importVdb.version.propertyValue") );
     }
 
     @Test
@@ -187,7 +188,7 @@ public final class VdbValidationTest extends RelationalValidationTest {
         ModelSource modelSource = addSource(model,"mySource");
 
         final Rule[] rules = _repo.getValidationManager().getRules(getTransaction(),modelSource);
-        assertThat( rules.length, is( 1 ) );
+        assertThat( rules.length, is( 3 ) );
         assertThat( getRuleNames( rules ), hasItems( "default.modelSource.nodeName" ) );
     }
 
@@ -235,8 +236,9 @@ public final class VdbValidationTest extends RelationalValidationTest {
         StoredProcedure sp = addStoredProcedure(model,"mySP");
 
         final Rule[] rules = _repo.getValidationManager().getRules(getTransaction(),sp);
-        assertThat( rules.length, is( 1 ) );
-        assertThat( getRuleNames( rules ), hasItems( "default.storedProcedure.nodeName" ) );
+        assertThat( rules.length, is( 2 ) );
+        assertThat( getRuleNames( rules ), hasItems( "default.storedProcedure.nodeName",
+                                                     "default.storedProcedure.nameInSource.propertyValue") );
     }
 
     @Test
@@ -271,8 +273,9 @@ public final class VdbValidationTest extends RelationalValidationTest {
         PrimaryKey pk = addPrimaryKey(table,"myPK");
 
         final Rule[] rules = _repo.getValidationManager().getRules(getTransaction(),pk);
-        assertThat( rules.length, is( 1 ) );
-        assertThat( getRuleNames( rules ), hasItems( "default.primaryKey.nodeName" ) );
+        assertThat( rules.length, is( 2 ) );
+        assertThat( getRuleNames( rules ), hasItems( "default.primaryKey.nodeName",
+                                                     "default.primaryKey.tableElementRefs.propertyValue") );
     }
 
     @Test
@@ -296,8 +299,9 @@ public final class VdbValidationTest extends RelationalValidationTest {
         UniqueConstraint uc = addUniqueConstraint(table,"myUC");
 
         final Rule[] rules = _repo.getValidationManager().getRules(getTransaction(),uc);
-        assertThat( rules.length, is( 1 ) );
-        assertThat( getRuleNames( rules ), hasItems( "default.uniqueConstraint.nodeName" ) );
+        assertThat( rules.length, is( 2 ) );
+        assertThat( getRuleNames( rules ), hasItems( "default.uniqueConstraint.nodeName",
+                                                     "default.uniqueConstraint.tableElementRefs.propertyValue") );
     }
 
     @Test
@@ -351,8 +355,40 @@ public final class VdbValidationTest extends RelationalValidationTest {
         Parameter param = addParameter(sp,"myParam");
 
         final Rule[] rules = _repo.getValidationManager().getRules(getTransaction(),param);
-        assertThat( rules.length, is( 1 ) );
-        assertThat( getRuleNames( rules ), hasItems( "default.parameter.nodeName" ) );
+        assertThat( rules.length, is( 2 ) );
+        assertThat( getRuleNames( rules ), hasItems( "default.parameter.nodeName",
+                                                     "default.parameter.datatype.propertyValue") );
+    }
+
+    @Test
+    public void shouldGetValidRulesForStringParameter() throws Exception {
+        Vdb vdb = createVdb("myVDB");
+        Model model = addModel(vdb,"myModel");
+        StoredProcedure sp = addStoredProcedure(model,"mySP");
+        Parameter param = addParameter(sp,"myParam");
+        param.setDatatypeName(getTransaction(), "string");
+
+        final Rule[] rules = _repo.getValidationManager().getRules(getTransaction(),param);
+        assertThat( rules.length, is( 3 ) );
+        assertThat( getRuleNames( rules ), hasItems( "default.parameter.nodeName",
+                                                     "default.parameter.datatype.propertyValue",
+                                                     "default.parameter.stringDatatype.lengthPropertyValue" ) );
+    }
+
+    @Test
+    public void shouldGetValidRulesForNumericParameter() throws Exception {
+        Vdb vdb = createVdb("myVDB");
+        Model model = addModel(vdb,"myModel");
+        StoredProcedure sp = addStoredProcedure(model,"mySP");
+        Parameter param = addParameter(sp,"myParam");
+        param.setDatatypeName(getTransaction(), "decimal");
+
+        final Rule[] rules = _repo.getValidationManager().getRules(getTransaction(),param);
+        assertThat( rules.length, is( 3 ) );
+        assertThat( rules.length, is( 3 ) );
+        assertThat( getRuleNames( rules ), hasItems( "default.parameter.nodeName",
+                                                     "default.parameter.datatype.propertyValue",
+                                                     "default.parameter.numericDatatype.precisionPropertyValue" ) );
     }
 
     @Test
@@ -468,6 +504,18 @@ public final class VdbValidationTest extends RelationalValidationTest {
         assertThat( results.length, is( 1 ) );
         assertThat( results[0].getRuleId(), is( "default.vdb.version.propertyValue" ) );
         assertThat( results[0].isOK(), is( true ));
+    }
+
+    @Test
+    public void shouldTestVdbVersionValidationFailure() throws Exception {
+        Vdb vdb = createVdb("myVDB");
+        vdb.setVersion(getTransaction(), -1);
+
+        final Result[] results = _repo.getValidationManager().evaluate(getTransaction(), vdb, "default.vdb.version.propertyValue");
+        assertThat( results.length, is( 1 ) );
+        assertThat( results[0].getRuleId(), is( "default.vdb.version.propertyValue" ) );
+        assertThat( results[0].isOK(), is( false ));
+        assertThat( results[0].getLevel(), is( Level.ERROR));
     }
 
     @Test
@@ -636,7 +684,7 @@ public final class VdbValidationTest extends RelationalValidationTest {
         assertThat( results[0].isOK(), is( false ));
         assertThat( results[0].getLevel(), is( Level.ERROR));
     }
-
+    
     // ==============================================================================================
     // Entry Validation Rules
     // ==============================================================================================
@@ -690,7 +738,32 @@ public final class VdbValidationTest extends RelationalValidationTest {
         assertThat( results[0].isOK(), is( false ));
         assertThat( results[0].getLevel(), is( Level.ERROR));
     }
+    
+    @Test
+    public void shouldTestVdbImportVersionValidationSuccess() throws Exception {
+        Vdb vdb = createVdb("myVDB");
+        VdbImport vdbImport = addVdbImport(vdb,"myImport");
+        vdbImport.setVersion(getTransaction(), 3);
 
+        final Result[] results = _repo.getValidationManager().evaluate(getTransaction(), vdbImport, "default.importVdb.version.propertyValue");
+        assertThat( results.length, is( 1 ) );
+        assertThat( results[0].getRuleId(), is( "default.importVdb.version.propertyValue" ) );
+        assertThat( results[0].isOK(), is( true ));
+    }
+    
+    @Test
+    public void shouldTestVdbImportVersionValidationFailure() throws Exception {
+        Vdb vdb = createVdb("myVDB");
+        VdbImport vdbImport = addVdbImport(vdb,"myImport");
+        vdbImport.setVersion(getTransaction(), -1);
+
+        final Result[] results = _repo.getValidationManager().evaluate(getTransaction(), vdbImport, "default.importVdb.version.propertyValue");
+        assertThat( results.length, is( 1 ) );
+        assertThat( results[0].getRuleId(), is( "default.importVdb.version.propertyValue" ) );
+        assertThat( results[0].isOK(), is( false ));
+        assertThat( results[0].getLevel(), is( Level.ERROR));
+    }
+    
     // ==============================================================================================
     // Model Validation Rules
     // ==============================================================================================
@@ -975,6 +1048,58 @@ public final class VdbValidationTest extends RelationalValidationTest {
         assertThat( results[0].isOK(), is( false ));
         assertThat( results[0].getLevel(), is( Level.ERROR));
     }
+    
+    @Test
+    public void shouldTestModelSourceTranslatorValidationSuccess() throws Exception {
+        Vdb vdb = createVdb("myVDB");
+        Model model = addModel(vdb,"myModel");
+        ModelSource modelSource = addSource(model,"mySource");
+        modelSource.setTranslatorName(getTransaction(), "oracle");
+
+        final Result[] results = _repo.getValidationManager().evaluate(getTransaction(), modelSource, "default.modelSource.sourceTranslator.propertyValue");
+        assertThat( results.length, is( 1 ) );
+        assertThat( results[0].getRuleId(), is( "default.modelSource.sourceTranslator.propertyValue" ) );
+        assertThat( results[0].isOK(), is( true ));
+    }
+
+    @Test
+    public void shouldTestModelSourceTranslatorValidationFailure() throws Exception {
+        Vdb vdb = createVdb("myVDB");
+        Model model = addModel(vdb,"myModel");
+        ModelSource modelSource = addSource(model,"mySource");
+
+        final Result[] results = _repo.getValidationManager().evaluate(getTransaction(), modelSource, "default.modelSource.sourceTranslator.propertyValue");
+        assertThat( results.length, is( 1 ) );
+        assertThat( results[0].getRuleId(), is( "default.modelSource.sourceTranslator.propertyValue" ) );
+        assertThat( results[0].isOK(), is( false ));
+        assertThat( results[0].getLevel(), is( Level.ERROR));
+    }
+
+    @Test
+    public void shouldTestModelSourceJndiNameValidationSuccess() throws Exception {
+        Vdb vdb = createVdb("myVDB");
+        Model model = addModel(vdb,"myModel");
+        ModelSource modelSource = addSource(model,"mySource");
+        modelSource.setJndiName(getTransaction(), "java:/test");
+
+        final Result[] results = _repo.getValidationManager().evaluate(getTransaction(), modelSource, "default.modelSource.sourceJndiName.propertyValue");
+        assertThat( results.length, is( 1 ) );
+        assertThat( results[0].getRuleId(), is( "default.modelSource.sourceJndiName.propertyValue" ) );
+        assertThat( results[0].isOK(), is( true ));
+    }
+
+    @Test
+    public void shouldTestModelSourceJndiNameValidationFailure() throws Exception {
+        Vdb vdb = createVdb("myVDB");
+        Model model = addModel(vdb,"myModel");
+        ModelSource modelSource = addSource(model,"mySource");
+
+        final Result[] results = _repo.getValidationManager().evaluate(getTransaction(), modelSource, "default.modelSource.sourceJndiName.propertyValue");
+        assertThat( results.length, is( 1 ) );
+        assertThat( results[0].getRuleId(), is( "default.modelSource.sourceJndiName.propertyValue" ) );
+        assertThat( results[0].isOK(), is( false ));
+        assertThat( results[0].getLevel(), is( Level.WARNING));
+    }
 
     // ==============================================================================================
     // PushdownFunction Validation Rules
@@ -1210,6 +1335,32 @@ public final class VdbValidationTest extends RelationalValidationTest {
         assertThat( results[0].getRuleId(), is( "default.storedProcedure.nodeName" ) );
         assertThat( results[0].isOK(), is( false ));
         assertThat( results[0].getLevel(), is( Level.ERROR));
+    }
+
+    @Test
+    public void shouldTestStoredProcedureNameInSourceValidationSuccess() throws Exception {
+        Vdb vdb = createVdb("myVDB");
+        Model model = addModel(vdb,"myModel");
+        StoredProcedure sp = addStoredProcedure(model,"mySP");
+        sp.setNameInSource(getTransaction(), "aNIS");
+
+        final Result[] results = _repo.getValidationManager().evaluate(getTransaction(), sp, "default.storedProcedure.nameInSource.propertyValue");
+        assertThat( results.length, is( 1 ) );
+        assertThat( results[0].getRuleId(), is( "default.storedProcedure.nameInSource.propertyValue" ) );
+        assertThat( results[0].isOK(), is( true ));
+    }
+
+    @Test
+    public void shouldTestStoredProcedureNameInSourceValidationFailure() throws Exception {
+        Vdb vdb = createVdb("myVDB");
+        Model model = addModel(vdb,"myModel");
+        StoredProcedure sp = addStoredProcedure(model,"mySP");
+
+        final Result[] results = _repo.getValidationManager().evaluate(getTransaction(), sp, "default.storedProcedure.nameInSource.propertyValue");
+        assertThat( results.length, is( 1 ) );
+        assertThat( results[0].getRuleId(), is( "default.storedProcedure.nameInSource.propertyValue" ) );
+        assertThat( results[0].isOK(), is( false ));
+        assertThat( results[0].getLevel(), is( Level.WARNING));
     }
 
     // ==============================================================================================
@@ -1547,6 +1698,126 @@ public final class VdbValidationTest extends RelationalValidationTest {
         final Result[] results = _repo.getValidationManager().evaluate(getTransaction(), param, "default.parameter.nodeName");
         assertThat( results.length, is( 1 ) );
         assertThat( results[0].getRuleId(), is( "default.parameter.nodeName" ) );
+        assertThat( results[0].isOK(), is( false ));
+        assertThat( results[0].getLevel(), is( Level.ERROR));
+    }
+
+    @Test
+    public void shouldTestParameterDatatypeValidationSuccess() throws Exception {
+        Vdb vdb = createVdb("myVDB");
+        Model model = addModel(vdb,"myModel");
+        StoredProcedure sp = addStoredProcedure(model,"mySP");
+        Parameter param = addParameter(sp,"myParam");
+        param.setDatatypeName(getTransaction(), "string");
+
+        final Result[] results = _repo.getValidationManager().evaluate(getTransaction(), param, "default.parameter.datatype.propertyValue");
+        assertThat( results.length, is( 1 ) );
+        assertThat( results[0].getRuleId(), is( "default.parameter.datatype.propertyValue" ) );
+        assertThat( results[0].isOK(), is( true ));
+    }
+
+    @Test
+    public void shouldTestParameterDatatypeValidationFailure() throws Exception {
+        Vdb vdb = createVdb("myVDB");
+        Model model = addModel(vdb,"myModel");
+        StoredProcedure sp = addStoredProcedure(model,"mySP");
+        Parameter param = addParameter(sp,"myParam");
+
+        final Result[] results = _repo.getValidationManager().evaluate(getTransaction(), param, "default.parameter.datatype.propertyValue");
+        assertThat( results.length, is( 1 ) );
+        assertThat( results[0].getRuleId(), is( "default.parameter.datatype.propertyValue" ) );
+        assertThat( results[0].isOK(), is( false ));
+        assertThat( results[0].getLevel(), is( Level.ERROR));
+    }
+
+    @Test
+    public void shouldTestStringParameterLengthValidationSuccess() throws Exception {
+        Vdb vdb = createVdb("myVDB");
+        Model model = addModel(vdb,"myModel");
+        StoredProcedure sp = addStoredProcedure(model,"mySP");
+        Parameter param = addParameter(sp,"myParam");
+        param.setDatatypeName(getTransaction(), "string");
+        param.setLength(getTransaction(), 1);
+
+        final Result[] results = _repo.getValidationManager().evaluate(getTransaction(), param, "default.parameter.stringDatatype.lengthPropertyValue");
+        assertThat( results.length, is( 1 ) );
+        assertThat( results[0].getRuleId(), is( "default.parameter.stringDatatype.lengthPropertyValue" ) );
+        assertThat( results[0].isOK(), is( true ));
+    }
+
+    @Test
+    public void shouldStringParameterNoLengthValidationFailure() throws Exception {
+        Vdb vdb = createVdb("myVDB");
+        Model model = addModel(vdb,"myModel");
+        StoredProcedure sp = addStoredProcedure(model,"mySP");
+        Parameter param = addParameter(sp,"myParam");
+        param.setDatatypeName(getTransaction(), "string");
+
+        final Result[] results = _repo.getValidationManager().evaluate(getTransaction(), param, "default.parameter.stringDatatype.lengthPropertyValue");
+        assertThat( results.length, is( 1 ) );
+        assertThat( results[0].getRuleId(), is( "default.parameter.stringDatatype.lengthPropertyValue" ) );
+        assertThat( results[0].isOK(), is( false ));
+        assertThat( results[0].getLevel(), is( Level.ERROR));
+    }
+
+    @Test
+    public void shouldStringParameterWrongLengthValidationFailure() throws Exception {
+        Vdb vdb = createVdb("myVDB");
+        Model model = addModel(vdb,"myModel");
+        StoredProcedure sp = addStoredProcedure(model,"mySP");
+        Parameter param = addParameter(sp,"myParam");
+        param.setDatatypeName(getTransaction(), "string");
+        param.setLength(getTransaction(), 0);
+
+        final Result[] results = _repo.getValidationManager().evaluate(getTransaction(), param, "default.parameter.stringDatatype.lengthPropertyValue");
+        assertThat( results.length, is( 1 ) );
+        assertThat( results[0].getRuleId(), is( "default.parameter.stringDatatype.lengthPropertyValue" ) );
+        assertThat( results[0].isOK(), is( false ));
+        assertThat( results[0].getLevel(), is( Level.ERROR));
+    }
+
+    @Test
+    public void shouldTestNumericParameterPrecisionValidationSuccess() throws Exception {
+        Vdb vdb = createVdb("myVDB");
+        Model model = addModel(vdb,"myModel");
+        StoredProcedure sp = addStoredProcedure(model,"mySP");
+        Parameter param = addParameter(sp,"myParam");
+        param.setDatatypeName(getTransaction(), "decimal");
+        param.setPrecision(getTransaction(), 1);
+
+        final Result[] results = _repo.getValidationManager().evaluate(getTransaction(), param, "default.parameter.numericDatatype.precisionPropertyValue");
+        assertThat( results.length, is( 1 ) );
+        assertThat( results[0].getRuleId(), is( "default.parameter.numericDatatype.precisionPropertyValue" ) );
+        assertThat( results[0].isOK(), is( true ));
+    }
+
+    @Test
+    public void shouldTestNumericParameterNoPrecisionValidationFailure() throws Exception {
+        Vdb vdb = createVdb("myVDB");
+        Model model = addModel(vdb,"myModel");
+        StoredProcedure sp = addStoredProcedure(model,"mySP");
+        Parameter param = addParameter(sp,"myParam");
+        param.setDatatypeName(getTransaction(), "decimal");
+
+        final Result[] results = _repo.getValidationManager().evaluate(getTransaction(), param, "default.parameter.numericDatatype.precisionPropertyValue");
+        assertThat( results.length, is( 1 ) );
+        assertThat( results[0].getRuleId(), is( "default.parameter.numericDatatype.precisionPropertyValue" ) );
+        assertThat( results[0].isOK(), is( false ));
+        assertThat( results[0].getLevel(), is( Level.ERROR));
+    }
+
+    @Test
+    public void shouldTestNumericParameterWrongPrecisionValidationFailure() throws Exception {
+        Vdb vdb = createVdb("myVDB");
+        Model model = addModel(vdb,"myModel");
+        StoredProcedure sp = addStoredProcedure(model,"mySP");
+        Parameter param = addParameter(sp,"myParam");
+        param.setDatatypeName(getTransaction(), "decimal");
+        param.setPrecision(getTransaction(), 0);
+
+        final Result[] results = _repo.getValidationManager().evaluate(getTransaction(), param, "default.parameter.numericDatatype.precisionPropertyValue");
+        assertThat( results.length, is( 1 ) );
+        assertThat( results[0].getRuleId(), is( "default.parameter.numericDatatype.precisionPropertyValue" ) );
         assertThat( results[0].isOK(), is( false ));
         assertThat( results[0].getLevel(), is( Level.ERROR));
     }

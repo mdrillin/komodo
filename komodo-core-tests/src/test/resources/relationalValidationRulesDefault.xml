@@ -205,6 +205,15 @@
             <pattern>^[a-zA-Z]+[a-zA-Z0-9]*$</pattern> 
         </nameValidation>
         
+        <!-- The VdbImport Version property is required and must be a non-zero positive integer -->
+        <propertyValidation jcrName="vdb:version" required="true">
+            <message locale="en">Rules that validate the property 'vdb:version' of the 'vdb:importVdb' node type.
+            </message>
+            <valueValidation id="default.importVdb.version.propertyValue" severity="ERROR">
+                <description locale="en">The VdbImport 'version' property is required and must be a non-zero integer.</description>
+                <pattern>^[1-9]\d*$</pattern>
+            </valueValidation>
+        </propertyValidation>
     </nodeValidation>
 
     <!-- ================================= -->

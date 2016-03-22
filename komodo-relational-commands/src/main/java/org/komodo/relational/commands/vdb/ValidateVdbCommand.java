@@ -40,7 +40,8 @@ public final class ValidateVdbCommand extends VdbShellCommand {
     protected CommandResult doExecute() {
         
         // Default is to do a 'full' validation (validate the node and all its ancestors).  Can specify to validate this node only.
-        final boolean fullValidation = Boolean.getBoolean( optionalArgument( 0, "true" ) ); //$NON-NLS-1$
+        String fullValArg = optionalArgument( 0, Boolean.toString(true) );
+        final boolean fullValidation = Boolean.parseBoolean( fullValArg ); 
         
         try {
             Vdb vdb = getVdb();
@@ -62,17 +63,18 @@ public final class ValidateVdbCommand extends VdbShellCommand {
                 print( MESSAGE_INDENT, I18n.bind( VdbCommandsI18n.vdbValidationErrorsHeader, vdbName ) );
                 for(Result result : results) {
                     if( result.getLevel() == Outcome.Level.ERROR ) {
-                        print( MESSAGE_INDENT, result.getMessage() );
+                        print( MESSAGE_INDENT*2, result.getMessage() );
                     }
                 }
+                print();
             }
 
             // Print validation warnings
             if( hasWarnings ) {
                 print( MESSAGE_INDENT, I18n.bind( VdbCommandsI18n.vdbValidationWarningsHeader, vdbName ) );
                 for(Result result : results) {
-                    if( result.getLevel() == Outcome.Level.ERROR ) {
-                        print( MESSAGE_INDENT, result.getMessage() );
+                    if( result.getLevel() == Outcome.Level.WARNING ) {
+                        print( MESSAGE_INDENT*2, result.getMessage() );
                     }
                 }
             }
@@ -99,7 +101,7 @@ public final class ValidateVdbCommand extends VdbShellCommand {
      */
     @Override
     protected int getMaxArgCount() {
-        return 0;
+        return 1;
     }
 
     /**
