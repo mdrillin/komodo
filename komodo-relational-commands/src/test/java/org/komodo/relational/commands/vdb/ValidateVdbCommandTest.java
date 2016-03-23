@@ -27,11 +27,26 @@ import org.komodo.shell.api.CommandResult;
 public final class ValidateVdbCommandTest extends AbstractCommandTest {
 
     @Test
-    public void testValidateVdb() throws Exception {
+    public void testValidateVdbFull() throws Exception {
         final String[] commands = {
             "create-vdb testVdb vdbPath",
             "cd testVdb",
             "validate-vdb"};
+        final CommandResult result = execute( commands );
+        assertCommandResultOk(result);
+
+        // Check the output
+        String writerOutput = getCommandOutput();
+        assertTrue( writerOutput,
+                    writerOutput.contains( "The VDB 'vdb:connectionType' property is required and must match the specified pattern" ) );
+    }
+
+    @Test
+    public void testValidateVdb() throws Exception {
+        final String[] commands = {
+            "create-vdb testVdb vdbPath",
+            "cd testVdb",
+            "validate-vdb false"};
         final CommandResult result = execute( commands );
         assertCommandResultOk(result);
 

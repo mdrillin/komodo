@@ -26,7 +26,7 @@ public final class ValidationManagerImplTest extends AbstractLocalRepositoryTest
     private static String RULES_FILE_VERIFY_ERRORS = "verifyValidationErrors.xml";
     private static String RULES_FILE_VERIFY_UNIQUENESS_CHECKS = "verifyUniquenessChecks.xml";
     private static String RULES_FILE_ALL_CONSTRUCTS = "validationAllConstructs.xml";
-    private static String RULES_FILE_RELATIONAL_RULES = "relationalValidationRulesDefault.xml";
+    private static String RULES_FILE_RELATIONAL_EXAMPLE = "relationalRulesExample.xml";
     private static String RULES_FILE_NODE_NAME_RULE = "nodeNameRule.xml";
     private static String RULES_FILE_PROP_REQUIRED_RULE = "propRequiredRule.xml";
     private static String RULES_FILE_PROP_VALUE_RULE = "propValueRule.xml";
@@ -130,7 +130,7 @@ public final class ValidationManagerImplTest extends AbstractLocalRepositoryTest
 
     @Test
     public void shouldParseValidationRulesXmlWithNoErrors() throws Exception {
-        String testFilePath = getClass().getClassLoader().getResource(RULES_FILE_RELATIONAL_RULES).getFile();
+        String testFilePath = getClass().getClassLoader().getResource(RULES_FILE_RELATIONAL_EXAMPLE).getFile();
         final File testFile = new File( testFilePath );
         final List< String > errors = _validationMgr.validateRules( testFile );
         assertThat( errors.isEmpty(), is( true ) );
@@ -184,7 +184,6 @@ public final class ValidationManagerImplTest extends AbstractLocalRepositoryTest
         assertThat( result.isOK(), is( false ) );
         assertThat( result.getPath(), is( kobject.getAbsolutePath() ) );
         assertThat( result.getRuleId(), is( aRule.getName( getTransaction() ) ) );
-        assertThat( result.getMessage(), is( "The VDB name does not match the specified pattern." ));
     }
     
     @Test
@@ -266,7 +265,6 @@ public final class ValidationManagerImplTest extends AbstractLocalRepositoryTest
         assertThat( result.isOK(), is( false ) );
         assertThat( result.getPath(), is( kobject.getAbsolutePath() ) );
         assertThat( result.getRuleId(), is( aRule.getName( getTransaction() ) ) );
-        assertThat( result.getMessage(), is( "The VDB 'vdb:connectionType' property must match the specified pattern." ));
     }
 
     @Test
@@ -319,7 +317,6 @@ public final class ValidationManagerImplTest extends AbstractLocalRepositoryTest
         assertThat( result.isOK(), is( false ) );
         assertThat( result.getPath(), is( kobject.getAbsolutePath() ) );
         assertThat( result.getRuleId(), is( aRule.getName( getTransaction() ) ) );
-        assertThat( result.getMessage(), is( "The value of property 'vdb:version' is invalid." ));
     }
 
     @Test
@@ -372,7 +369,6 @@ public final class ValidationManagerImplTest extends AbstractLocalRepositoryTest
         assertThat( result.isOK(), is( false ) );
         assertThat( result.getPath(), is( kobject.getAbsolutePath() ) );
         assertThat( result.getRuleId(), is( aRule.getName( getTransaction() ) ) );
-        assertThat( result.getMessage(), is( "The VDB version must be between 1 and 5." ));
     }
 
     @Test

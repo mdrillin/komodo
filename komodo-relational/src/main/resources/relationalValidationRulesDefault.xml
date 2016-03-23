@@ -205,6 +205,15 @@
             <pattern>^[a-zA-Z]+[a-zA-Z0-9]*$</pattern> 
         </nameValidation>
         
+        <!-- The VdbImport Version property is required and must be a non-zero positive integer -->
+        <propertyValidation jcrName="vdb:version" required="true">
+            <message locale="en">Rules that validate the property 'vdb:version' of the 'vdb:importVdb' node type.
+            </message>
+            <valueValidation id="default.importVdb.version.propertyValue" severity="ERROR">
+                <description locale="en">The VdbImport 'version' property is required and must be a non-zero integer.</description>
+                <pattern>^[1-9]\d*$</pattern>
+            </valueValidation>
+        </propertyValidation>
     </nodeValidation>
 
     <!-- ================================= -->
@@ -316,6 +325,26 @@
             <description locale="en">The ModelSource name must match the specified pattern.</description>
             <pattern>^[a-zA-Z]+[a-zA-Z0-9]*$</pattern> 
         </nameValidation>
+        
+        <!-- The ModelSource sourceTranslator property is required -->
+        <propertyValidation jcrName="vdb:sourceTranslator" required="true">
+            <message locale="en">Rules that validate the 'sourceTranslator' property of the 'vdb:source' node type.
+            </message>
+            <valueValidation id="default.modelSource.sourceTranslator.propertyValue" severity="ERROR">
+                <description locale="en">The ModelSource 'sourceTranslator' property is required.</description>
+                <pattern>.+</pattern>
+            </valueValidation>
+        </propertyValidation>
+        
+        <!-- The ModelSource sourceJndiName property is required -->
+        <propertyValidation jcrName="vdb:sourceJndiName" required="true">
+            <message locale="en">Rules that validate the 'sourceJndiName' property of the 'vdb:source' node type.
+            </message>
+            <valueValidation id="default.modelSource.sourceJndiName.propertyValue" severity="WARNING">
+                <description locale="en">The ModelSource 'sourceJndiName' property is required.</description>
+                <pattern>.+</pattern>
+            </valueValidation>
+        </propertyValidation>
     </nodeValidation>
 
     <!-- =========================== -->
@@ -418,6 +447,16 @@
             <description locale="en">The PrimaryKey name must match the specified pattern.</description>
             <pattern>^[a-zA-Z]+[a-zA-Z0-9]*$</pattern> 
         </nameValidation>
+
+        <!-- The PrimaryKey must reference at least one column.  (tableElementRefs property is required) -->
+        <propertyValidation jcrName="tableElementRefs" required="true">
+            <message locale="en">Rules that validate the 'tableElementRefs' property of the 'teiidddl:tableElementConstraint' node type.
+            </message>
+            <valueValidation id="default.primaryKey.tableElementRefs.propertyValue" severity="ERROR">
+                <description locale="en">The PrimaryKey must reference at least one column.</description>
+                <pattern>.+</pattern>
+            </valueValidation>
+        </propertyValidation>
         
     </nodeValidation>
     
@@ -448,6 +487,16 @@
             <pattern>^[a-zA-Z]+[a-zA-Z0-9]*$</pattern> 
         </nameValidation>
         
+        <!-- The UniqueConstraint must reference at least one column.  (tableElementRefs property is required) -->
+        <propertyValidation jcrName="teiidddl:tableElementRefs" required="true">
+            <message locale="en">Rules that validate the 'tableElementRefs' property of UniqueConstraints.
+            </message>
+            <valueValidation id="default.uniqueConstraint.tableElementRefs.propertyValue" severity="ERROR">
+                <description locale="en">The UniqueConstraint must reference at least one column.</description>
+                <pattern>.+</pattern>
+            </valueValidation>
+        </propertyValidation>
+        
     </nodeValidation>
 
     <!-- ================================== -->
@@ -463,6 +512,16 @@
             <pattern>^[a-zA-Z]+[a-zA-Z0-9]*$</pattern> 
         </nameValidation>
         
+        <!-- The StoredProcedure nameInSource property is required and must be valid -->
+        <propertyValidation jcrName="NAMEINSOURCE" required="true">
+            <message locale="en">Rules that validate the 'NAMEINSOURCE' property of the 'vdb:storedProcedure' node type.
+            </message>
+            <valueValidation id="default.storedProcedure.nameInSource.propertyValue" severity="WARNING">
+                <description locale="en">The StoredProcedure 'NAMEINSOURCE' property is required and must match the specified pattern.</description>
+                <pattern>^[a-zA-Z]+[a-zA-Z0-9]*$</pattern>
+            </valueValidation>
+        </propertyValidation>
+
     </nodeValidation>
 
     <!-- ================================== -->
@@ -564,18 +623,52 @@
         </nameValidation>
         
         <!-- The datatype  property is required and must be a valid datatype -->
-        <!-- 
-        <propertyValidation jcrName="vdb:datatype" required="true">
+        <propertyValidation jcrName="ddl:datatypeName" required="true">
             <message locale="en">Rules that validate the property 'vdb:datatype' of the 'vdb:parameter' node type.
             </message>
             <valueValidation id="default.parameter.datatype.propertyValue" severity="ERROR">
-                <description locale="en">The Parameter 'vdb:datatype' property must be valid.</description>
+                <description locale="en">The Parameter 'ddl:datatypeName' property is required and must match the specified pattern.</description>
                 <pattern>^[a-zA-Z]+[a-zA-Z0-9]*$</pattern> 
             </valueValidation>
         </propertyValidation>
-        -->
     </nodeValidation>
 
+    <!-- ====================================== -->
+    <!-- Parameter(string) Validation Rules     -->
+    <!-- ====================================== -->
+    <nodeValidation jcrName="teiidddl:procedureParameter">
+        <propRestriction value="string">ddl:datatypeName</propRestriction>
+        <message locale="en">Validation rules for the Parameters with datatype 'string'</message>
+
+        <!-- The datatype  property is required and must be a valid datatype -->
+        <propertyValidation jcrName="ddl:datatypeLength" required="true">
+            <message locale="en">Rules that validate the property 'ddl:datatypeLength' of the 'teiidddl:procedureParameter'(string) node type.
+            </message>
+            <valueRangeValidation id="default.parameter.stringDatatype.lengthPropertyValue" severity="ERROR">
+                <description locale="en">The length property of a string Parameter is required and must be 1 or greater.</description>
+                <minValue inclusive="true">1</minValue>
+            </valueRangeValidation>
+        </propertyValidation>
+    </nodeValidation>
+    
+    <!-- ======================================= -->
+    <!-- Parameter(numeric) Validation Rules     -->
+    <!-- ======================================= -->
+    <nodeValidation jcrName="teiidddl:procedureParameter">
+        <propRestriction value="decimal">ddl:datatypeName</propRestriction>
+        <message locale="en">Validation rules for the Parameters with numeric datatypes</message>
+
+        <!-- The datatype  property is required and must be a valid datatype -->
+        <propertyValidation jcrName="ddl:datatypePrecision" required="true">
+            <message locale="en">Rules that validate the property 'ddl:datatypePrecision' of numeric 'teiidddl:procedureParameter' node type.
+            </message>
+            <valueRangeValidation id="default.parameter.numericDatatype.precisionPropertyValue" severity="ERROR">
+                <description locale="en">The precision property of a numeric Parameter is required and must be 1 or greater.</description>
+                <minValue inclusive="true">1</minValue>
+            </valueRangeValidation>
+        </propertyValidation>
+    </nodeValidation>
+    
     <!-- ==================================== -->
     <!-- DataTypeResultSet Validation Rules   -->
     <!-- ==================================== -->

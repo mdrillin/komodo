@@ -55,8 +55,8 @@ public final class UnsetTranslatorPropertyCommand extends TranslatorShellCommand
             if ( DESCRIPTION.equals( name ) ) {
                 translator.setDescription( transaction, null );
             // TYPE is mandatory and does not have a default so it can't be unset
-            // } else if ( TYPE.equals( name ) ) {
-            //     translator.setType( transaction, null );
+            } else if ( TYPE.equals( name ) ) {
+                errorMsg = I18n.bind( TranslatorCommandsI18n.cannotUnsetTranslatorType );
             } else {
                 errorMsg = I18n.bind( WorkspaceCommandsI18n.invalidPropertyName, name, Translator.class.getSimpleName() );
             }
