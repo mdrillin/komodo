@@ -25,12 +25,12 @@ You can deploy a VDB from VDB Builder to a running server.  The sample session b
 ---
 Here is a summary of the commands used for the above session:
 
-* __`show-status`__ - display the shell status.  Note that the current server status is [Connected]
-* __`list`__ - show all children in __workspace__.  Note that we have a VDB __VdbExampleDS__ in our workspace.
-* __`server-vdbs`__ - show all VDBs on the connected server.  Note that there are no VDBs found on the server.
-* __`server-deploy-vdb VdbExampleDS`__ - deploy __VdbExampleDS__ from VDB Builder to the connected server.
-* __`server-vdbs`__ - again, show all VDBs on the connect server.  Note that __VdbExampleDS__ has been deployed!
-* __`server-vdb VdbExampleDS`__ - show more detail for __VdbExampleDS__ on the connect server.
+* __`show-status`__ - display the shell status.  Note the server status is [Connected]
+* __`list`__ - show all children in __workspace__.  Note that we have one VDB __VdbDashboardDS__ in our workspace.
+* __`server-vdbs`__ - show all VDBs on the connected server.  Note that __VdbDashboardDS__ does not exist on the server.
+* __`server-deploy-vdb VdbDashboardDS`__ - deploy __VdbDashboardDS__ from VDB Builder to the connected server.
+* __`server-vdbs`__ - again, show all VDBs on the connected server.  Note that __VdbDashboardDS__ has been deployed!
+* __`server-vdb VdbDashboardDS`__ - show more detail for __VdbDashboardDS__ on the connect server.
 
 ---
 
@@ -45,10 +45,10 @@ Here is a summary of the commands used for the above session:
 
 * __`show-status`__ - display the shell status.  Note the current server status is [Connected]
 * __`list`__ - show all children in __workspace__.  Note that we do not have any VDBs.
-* __`server-vdbs`__ - show all VDBs on the connected server.  Note that __VdbExampleDS__ exists on the server. 
-* __`server-get-vdb VdbExampleDS`__ - gets __VdbExampleDS__ from the connected server, and copies it to VDB Builder workspace.
-* __`list`__ - show all children in __workspace__.  Note that __VdbExampleDS__ is now in the VDB Builder workspace!
-* __`cd VdbExampleDS`__ - navigate into __VdbExampleDS__.
-* __`show-summary`__ - shows a summary (properties and children) for the current context, __VdbExampleDS__
+* __`server-vdbs`__ - show all VDBs on the connected server.  Note that __VdbDashboardDS__ exists on the server. 
+* __`server-get-vdb VdbDashboardDS`__ - gets __VdbDashboardDS__ from the connected server, and copies it to VDB Builder workspace.
+* __`list`__ - show all children in __workspace__.  Note that __VdbDashboardDS__ is now in the VDB Builder workspace!
+* __`cd VdbDashboardDS`__ - navigate into __VdbDashboardDS__.
+* __`show-summary`__ - shows a summary (properties and children) for the current context, __VdbDashboardDS__
 
 ---
