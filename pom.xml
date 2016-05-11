@@ -230,17 +230,6 @@
 
 	<repositories>	
 		<!-- In Project repository -->
-		<repository>
-			<id>modeshape-in-project</id>
-			<name>Modeshape Project Repo</name>
-			<url>file://${project.basedir}/modeshape-libs</url>
-			<releases>
-				<enabled>true</enabled>
-			</releases>
-			<snapshots>
-				<enabled>false</enabled>
-			</snapshots>
-		</repository>
 
 		<repository>
 			<id>redhat-product-repository</id>

@@ -16,7 +16,6 @@
 
 	<modules>
 		<module>komodo-plugin-teiid-framework</module>
-		<module>teiid-8.11</module>
 		<module>teiid-8.12</module>
 		<module>komodo-plugin-service</module>
 	</modules>
