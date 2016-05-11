@@ -67,11 +67,6 @@
 
 		<dependency>
 			<groupId>org.komodo.plugins.teiid</groupId>
-			<artifactId>teiid-8.11</artifactId>
-			<scope>provided</scope>
-		</dependency>
-		<dependency>
-			<groupId>org.komodo.plugins.teiid</groupId>
 			<artifactId>teiid-8.12</artifactId>
 			<scope>provided</scope>
 		</dependency>

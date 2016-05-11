@@ -30,11 +30,6 @@
 		<dependencies>
 			<dependency>
 				<groupId>org.komodo.plugins.teiid</groupId>
-				<artifactId>teiid-8.11</artifactId>
-				<version>${project.version}</version>
-			</dependency>
-			<dependency>
-				<groupId>org.komodo.plugins.teiid</groupId>
 				<artifactId>teiid-8.12</artifactId>
 				<version>${project.version}</version>
 			</dependency>
