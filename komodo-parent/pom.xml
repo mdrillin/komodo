@@ -103,7 +103,7 @@
 	<properties>
 
 		<version.ip-bom>6.0.1.Final</version.ip-bom>
-		<version.modeshape>3.8.4.GA</version.modeshape>
+		<version.modeshape>3.8.4.GA-redhat-5</version.modeshape>
 		<version.javax.jcr>2.0</version.javax.jcr>
 
 		<!-- Instruct the build to use only UTF-8 encoding for source code -->
