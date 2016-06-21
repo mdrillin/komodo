@@ -150,6 +150,8 @@ public final class DataserviceImplTest extends RelationalModelTest {
         final String name2 = "childVdb2";
         this.dataservice.addVdb(getTransaction(), name1, "externalPath1");
         this.dataservice.addVdb(getTransaction(), name2, "externalPath1");
+        this.dataservice.setVdbName(getTransaction(), "theName");
+        this.dataservice.setDescription(getTransaction(), "theDescription");
 
         byte[] dsBytes = this.dataservice.export(getTransaction(), new Properties());
         assertNotNull(dsBytes);
@@ -170,9 +172,9 @@ public final class DataserviceImplTest extends RelationalModelTest {
                 try {
                     String name = entry.getName();
                     System.out.println("Entry Name: " + name);
-                    if (DataserviceManifest.MANIFEST.equals(name) ||
-                        name.startsWith(name1) ||
-                        name.startsWith(name2)) {
+                    if (name.equals(SERVICE_NAME+DYNAMIC_VDB_SUFFIX+XML_SUFFIX) ||
+                        name.startsWith(DATASERVICE_IMPORT_VDBS_FOLDER + FORWARD_SLASH + name1) ||
+                        name.startsWith(DATASERVICE_IMPORT_VDBS_FOLDER + FORWARD_SLASH + name2)) {
                             entries++;
                     }
 
@@ -226,19 +228,21 @@ public final class DataserviceImplTest extends RelationalModelTest {
         ImportOptions importOptions = new ImportOptions();
 
         importer.importVdb(getTransaction(),
-                                               TestUtilities.portfolioExample(), dataservice,
-                                               importOptions, importMessages);
+                           TestUtilities.portfolioExample(), dataservice,
+                           importOptions, importMessages);
         assertFalse(importMessages.hasError());
 
         importer.importVdb(getTransaction(),
-                                               TestUtilities.tweetExample(), dataservice,
-                                               importOptions, importMessages);
+                           TestUtilities.tweetExample(), dataservice,
+                           importOptions, importMessages);
         assertFalse(importMessages.hasError());
 
         commit(State.COMMITTED);
 
         File dsZip = File.createTempFile("DSZip", DOT + ZIP);
         dsZip.deleteOnExit();
+        this.dataservice.setVdbName(getTransaction(), "theName");
+        this.dataservice.setDescription(getTransaction(), "theDescription");
         byte[] dsBytes = this.dataservice.export(getTransaction(), new Properties());
         FileUtils.write(dsBytes, dsZip);
         TestUtilities.testZipFile(dsZip);
@@ -246,7 +250,7 @@ public final class DataserviceImplTest extends RelationalModelTest {
 
     @Test
     public void shouldImportDataService() throws Exception {
-        InputStream importStream = TestUtilities.getResourceAsStream(DataserviceImplTest.class, "dataservice", "sample-ds.zip");
+        InputStream importStream = TestUtilities.getResourceAsStream(DataserviceImplTest.class, "dataservice", "sample-dsnew.zip");
         assertNotNull(importStream);
 
         ImportMessages importMessages = new ImportMessages();
@@ -256,12 +260,25 @@ public final class DataserviceImplTest extends RelationalModelTest {
         DataserviceConveyor conveyor = new DataserviceConveyor(_repo);
         KomodoObject parent = _repo.komodoWorkspace(getTransaction());
         conveyor.dsImport(getTransaction(), importStream, parent, importOptions, importMessages);
-        assertFalse(importMessages.hasError());
+        
+        // Commit the transaction and handle any import exceptions
+        //commitHandleErrors(importMessages);
 
-        assertTrue(parent.hasChild(getTransaction(), serviceName));
-        KomodoObject theDataService = parent.getChild(getTransaction(), serviceName);
+        assertTrue(parent.hasChild(getTransaction(), serviceName, KomodoLexicon.DataService.NODE_TYPE));
+        KomodoObject theDataService = parent.getChild(getTransaction(), serviceName, KomodoLexicon.DataService.NODE_TYPE);
+        assertNotNull(theDataService);
+
+        Dataservice ds = Dataservice.RESOLVER.resolve(getTransaction(), theDataService);
+        
+        // If the service was imported correctly, properties should be set
+        assertTrue( "myService".equals( ds.getName(getTransaction()) ) );
+        assertTrue( "myService Description".equals( ds.getDescription(getTransaction())) );        
+        
+        String dynamicVdbXml = ds.getVdbXml(getTransaction());
+        assertNotNull(dynamicVdbXml);
 
         assertTrue(theDataService.hasChild(getTransaction(), TestUtilities.PORTFOLIO_VDB_NAME));
         assertTrue(theDataService.hasChild(getTransaction(), TestUtilities.TWEET_EXAMPLE_VDB_NAME));
     }
+    
 }

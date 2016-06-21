@@ -126,6 +126,17 @@ public interface Dataservice extends Vdb {
     };
 
     /**
+     * Get the dynamic vdb xml for the Dataservice
+     * @param uow
+     *        the transaction (cannot be <code>null</code> or have a state that is not
+     *        {@link org.komodo.spi.repository.Repository.UnitOfWork.State#NOT_STARTED})
+     * @return the vdb xml representing the dataservice (never <code>null</code>)
+     * @throws KException
+     *         if an error occurs
+     */
+    String getVdbXml( final UnitOfWork uow ) throws KException;
+
+    /**
      * @param uow
      *        the transaction (cannot be <code>null</code> or have a state that is not
      *        {@link org.komodo.spi.repository.Repository.UnitOfWork.State#NOT_STARTED})

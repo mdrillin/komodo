@@ -155,6 +155,26 @@ public class KSequencers implements StringConstants, EventListener, KSequencerCo
         return true;
     }
 
+    private boolean isDataserviceSequenceable(Property property) {
+        try {
+            if (! property.getName().equals(JcrConstants.JCR_DATA))
+                return false;
+
+            Node node = property.getParent();
+            if (! node.getName().equals(JcrConstants.JCR_CONTENT))
+                return false;
+
+            Node parentNode = node.getParent();
+            if (parentNode == null ||
+                    ! (parentNode.getPrimaryNodeType().getName().equals(KomodoLexicon.DataService.NODE_TYPE)))
+                return false;
+        } catch (RepositoryException ex) {
+            return false;
+        }
+
+        return true;
+    }
+
     private boolean isDdlSequenceable(Property property) {
         try {
             String propertyName = property.getName();
@@ -202,6 +222,9 @@ public class KSequencers implements StringConstants, EventListener, KSequencerCo
      */
     private SequencerType isSequenceable(Property property) {
         if (isVdbSequenceable(property))
+            return SequencerType.VDB;
+
+        if (isDataserviceSequenceable(property))
             return SequencerType.VDB;
 
         if (isDdlSequenceable(property))

@@ -31,6 +31,7 @@ import java.util.Properties;
 import java.util.zip.ZipEntry;
 import java.util.zip.ZipFile;
 import java.util.zip.ZipOutputStream;
+import org.komodo.core.KomodoLexicon;
 import org.komodo.importer.ImportMessages;
 import org.komodo.importer.ImportOptions;
 import org.komodo.importer.ImportOptions.ExistingNodeOptions;
@@ -39,6 +40,7 @@ import org.komodo.importer.Messages;
 import org.komodo.relational.dataservice.Dataservice;
 import org.komodo.relational.importer.ddl.DdlImporter;
 import org.komodo.relational.importer.vdb.VdbImporter;
+import org.komodo.relational.vdb.Vdb.VdbManifest;
 import org.komodo.relational.workspace.WorkspaceManager;
 import org.komodo.spi.KException;
 import org.komodo.spi.constants.StringConstants;
@@ -50,15 +52,22 @@ import org.komodo.spi.repository.Repository.UnitOfWork;
 import org.komodo.utils.ArgCheck;
 import org.komodo.utils.FileUtils;
 
+/**
+ * Class responsible for import and export of a Dataservice
+ */
 public class DataserviceConveyor implements StringConstants {
 
     /**
      * Buffer size for the byte arrays
      */
     public static final int BUFFER_SIZE = 8192;
-
+    
     private final Repository repository;
 
+    /**
+     * Constructor
+     * @param repository the repository
+     */
     public DataserviceConveyor(Repository repository) {
         this.repository = repository;
     }
@@ -122,36 +131,19 @@ public class DataserviceConveyor implements StringConstants {
             while (entries.hasMoreElements()) {
                 ZipEntry entry = entries.nextElement();
                 ByteArrayOutputStream bos = null;
-                InputStream zipStream = null;
 
                 try {
                     String name = entry.getName();
-                    if (! DataserviceManifest.MANIFEST.equals(name)) {
-                        continue;
+                    // Entry is at root and ends with -vdb.xml
+                    if(name!=null && !name.startsWith(DATASERVICE_IMPORT_VDBS_FOLDER)) {
+                        int indx = name.indexOf(DYNAMIC_VDB_SUFFIX + XML_SUFFIX);
+                        return name.substring(0, indx);
                     }
-
-                    bos = new ByteArrayOutputStream();
-                    final byte[] buf = new byte[BUFFER_SIZE];
-                    int length;
-
-                    zipStream = zipFile.getInputStream(entry);
-                    while ((length = zipStream.read(buf, 0, buf.length)) >= 0) {
-                        bos.write(buf, 0, length);
-                    }
-
-                    byte[] content = bos.toByteArray();
-                    ByteArrayInputStream entryStream = new ByteArrayInputStream(content);
-
-                    return DataserviceManifest.extractName(entryStream);
-
                 } finally {
                     if (bos != null)
                         bos.close();
-
-                    zipStream.close();
                 }
             }
-
         } catch (Exception ex) {
             throw new KException(ex);
         } finally {
@@ -173,9 +165,18 @@ public class DataserviceConveyor implements StringConstants {
         importOptions.setOption(OptionKeys.NAME, dsName);
     }
 
+    /**
+     * Import the dataservice from the srcStream under the specified parent
+     * @param transaction the transaction
+     * @param srcStream the source stream
+     * @param parent the parent
+     * @param importOptions import options
+     * @param importMessages import messages
+     * @throws KException if error occurs
+     */
     public void dsImport(UnitOfWork transaction, InputStream srcStream, KomodoObject parent, ImportOptions importOptions,
                          ImportMessages importMessages) throws KException {
-        ArgCheck.isNotNull(srcStream, "Source Stream");
+        ArgCheck.isNotNull(srcStream, "srcStream"); //$NON-NLS-1$
 
         long timestamp = System.currentTimeMillis();
         File zFile = new File(FileUtils.tempDirectory(), timestamp + DOT + ZIP);
@@ -200,8 +201,7 @@ public class DataserviceConveyor implements StringConstants {
             if (!entries.hasMoreElements())
                 return;
 
-            WorkspaceManager mgr = getWorkspaceManager();
-            Dataservice dataservice = mgr.createDataservice(transaction, parent, dsName);
+            Dataservice dataservice = null;
 
             while (entries.hasMoreElements()) {
                 ZipEntry entry = entries.nextElement();
@@ -222,10 +222,14 @@ public class DataserviceConveyor implements StringConstants {
 
                     byte[] content = bos.toByteArray();
                     ByteArrayInputStream entryStream = new ByteArrayInputStream(content);
-
-                    if (DataserviceManifest.MANIFEST.equals(name)) {
-                        DataserviceManifest manifest = new DataserviceManifest(transaction, dataservice);
-                        manifest.read(transaction, entryStream);
+                    
+                    if (!name.startsWith(DATASERVICE_IMPORT_VDBS_FOLDER)) {
+                        DataserviceImporter importer = new DataserviceImporter(repository);
+                        ImportOptions options = new ImportOptions();
+                        importer.importVdb(transaction, entryStream, parent, options, importMessages);
+                        
+                        KomodoObject kObj = parent.getChild(transaction, dsName, KomodoLexicon.DataService.NODE_TYPE);
+                        dataservice = Dataservice.RESOLVER.resolve(transaction, kObj);
                     } else if (name.endsWith(DocumentType.XML.toString())) {
                         VdbImporter importer = new VdbImporter(repository);
                         ImportOptions options = new ImportOptions();
@@ -257,6 +261,14 @@ public class DataserviceConveyor implements StringConstants {
         }
     }
 
+    /**
+     * Export the dataservice
+     * @param transaction the transaction
+     * @param dataService the Dataservice object
+     * @param exportProperties the export properties
+     * @return the byte array for the dataservice
+     * @throws KException if error occurs
+     */
     public byte[] dsExport(UnitOfWork transaction, DataserviceImpl dataService, Properties exportProperties) throws KException {
         ByteArrayOutputStream bos = new ByteArrayOutputStream();
         ZipOutputStream zipStream = null;
@@ -273,10 +285,11 @@ public class DataserviceConveyor implements StringConstants {
             //
             // Generate manifest for data service
             //
-            DataserviceManifest manifest = dataService.createManifest(transaction, new Properties());
+            VdbManifest manifest = dataService.createManifest(transaction, new Properties());
             byte[] manifestBytes = manifest.export(transaction, new Properties());
 
-            ZipEntry manZipEntry = new ZipEntry(DataserviceManifest.MANIFEST);
+            String manifestName = dataService.getName(transaction) + DYNAMIC_VDB_SUFFIX + XML_SUFFIX;
+            ZipEntry manZipEntry = new ZipEntry(manifestName);
             zipStream.putNextEntry(manZipEntry);
             zipStream.write(manifestBytes);
             zipStream.closeEntry();
@@ -293,8 +306,8 @@ public class DataserviceConveyor implements StringConstants {
                 String ext = exportable.getDocumentType().toString();
                 byte[] content = exportable.export(transaction, new Properties());
 
-                String entryName = name + DOT + ext;
-                ZipEntry zipEntry = new ZipEntry(entryName);
+                String entryName = name + DYNAMIC_VDB_SUFFIX + DOT + ext;
+                ZipEntry zipEntry = new ZipEntry(DATASERVICE_IMPORT_VDBS_FOLDER + FORWARD_SLASH + entryName);
 
                 zipStream.putNextEntry(zipEntry);
                 zipStream.write(content);

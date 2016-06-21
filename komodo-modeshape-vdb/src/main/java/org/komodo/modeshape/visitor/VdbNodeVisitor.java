@@ -36,6 +36,7 @@ import javax.jcr.nodetype.NodeType;
 import javax.xml.namespace.QName;
 import javax.xml.stream.XMLStreamException;
 import javax.xml.stream.XMLStreamWriter;
+import org.komodo.core.KomodoLexicon;
 import org.komodo.modeshape.AbstractNodeVisitor;
 import org.komodo.spi.constants.StringConstants;
 import org.komodo.spi.runtime.version.TeiidVersion;
@@ -60,6 +61,8 @@ public class VdbNodeVisitor extends AbstractNodeVisitor implements StringConstan
     private static Map<String, NodeTypeName> nodeNameIndex = new HashMap<String, NodeTypeName>();
 
     private enum NodeTypeName {
+
+        DATA_SERVICE(KomodoLexicon.DataService.NODE_TYPE, VdbLexicon.ManifestIds.VDB),
 
         VIRTUAL_DATABASE(VdbLexicon.Vdb.VIRTUAL_DATABASE, VdbLexicon.ManifestIds.VDB),
 
@@ -648,6 +651,7 @@ public class VdbNodeVisitor extends AbstractNodeVisitor implements StringConstan
         try {
             switch (ntName) {
                 case VIRTUAL_DATABASE:
+                case DATA_SERVICE:
                     virtualDatabase(node);
                     break;
                 case IMPORT_VDBS:

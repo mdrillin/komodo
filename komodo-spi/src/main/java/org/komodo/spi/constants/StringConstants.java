@@ -372,11 +372,22 @@ public interface StringConstants {
   /**
    * jboss temp directory
    */
-  String JBOSS_SERVER_TMP_DIR = "jboss.server.temp.dir";
+  String JBOSS_SERVER_TMP_DIR = "jboss.server.temp.dir";  //$NON-NLS-1$
 
   /**
    * Java temp directory
    */
-  String JAVA_IO_TMPDIR = "java.io.tmpdir";
+  String JAVA_IO_TMPDIR = "java.io.tmpdir";  //$NON-NLS-1$
+  
+  /**
+   * Dynamic VDB suffix
+   */
+  String DYNAMIC_VDB_SUFFIX = "-vdb";  //$NON-NLS-1$
+
+  /**
+   * Dataservice import vdb folder
+   */
+  String DATASERVICE_IMPORT_VDBS_FOLDER = "importVDBs";  //$NON-NLS-1$
+
 }
 

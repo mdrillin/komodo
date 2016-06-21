@@ -75,11 +75,6 @@ public class DataserviceImpl extends VdbImpl implements Dataservice {
         return Dataservice.IDENTIFIER;
     }
 
-    @Override
-    public DataserviceManifest createManifest(UnitOfWork transaction, Properties properties) throws KException {
-        return new DataserviceManifest(transaction, this);
-    }
-
     /* (non-Javadoc)
      * @see org.komodo.spi.repository.Exportable#export(org.komodo.spi.repository.Repository.UnitOfWork, java.util.Properties)
      */
@@ -247,6 +242,16 @@ public class DataserviceImpl extends VdbImpl implements Dataservice {
         }
 
         return result.toArray( new Vdb[ result.size() ] );
+    }
+
+    /* (non-Javadoc)
+     * @see org.komodo.relational.dataservice.Dataservice#getVdbXml(org.komodo.spi.repository.Repository.UnitOfWork)
+     */
+    @Override
+    public String getVdbXml(UnitOfWork uow) throws KException {
+        VdbManifest manifest = createManifest(uow, new Properties());
+        byte[] manifestBytes = manifest.export(uow, new Properties());
+        return new String(manifestBytes);
     }
 
 }
