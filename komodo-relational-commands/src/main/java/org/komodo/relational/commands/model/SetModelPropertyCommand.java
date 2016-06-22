@@ -57,12 +57,12 @@ public final class SetModelPropertyCommand extends ModelShellCommand {
             } else if ( METADATA_TYPE.equals( name ) ) {
                 model.setMetadataType( transaction, value );
             } else if ( MODEL_TYPE.equals( name ) ) {
-                if ( Model.Type.PHYSICAL.name().equals( value ) ) {
+                if ( Model.Type.PHYSICAL.name().equalsIgnoreCase( value ) ) {
                     model.setModelType( transaction, Model.Type.PHYSICAL );
-                } else if ( Model.Type.VIRTUAL.name().equals( value ) ) {
+                } else if ( Model.Type.VIRTUAL.name().equalsIgnoreCase( value ) ) {
                     model.setModelType( transaction, Model.Type.VIRTUAL );
                 } else {
-                    errorMsg = I18n.bind( ModelCommandsI18n.invalidModelTypePropertyValue, VISIBLE );
+                    errorMsg = I18n.bind( ModelCommandsI18n.invalidModelTypePropertyValue, value );
                 }
             } else if ( VISIBLE.equals( name ) ) {
                 if ( Boolean.TRUE.toString().equals( value ) || Boolean.FALSE.toString().equals( value ) ) {
