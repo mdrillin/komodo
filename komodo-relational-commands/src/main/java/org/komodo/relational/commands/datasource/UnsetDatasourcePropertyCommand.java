@@ -51,7 +51,11 @@ public final class UnsetDatasourcePropertyCommand extends DatasourceShellCommand
             final UnitOfWork transaction = getTransaction();
             String errorMsg = null;
 
-            if ( JNDI_NAME.equals( name ) ) {
+            if ( DESCRIPTION.equals( name ) ) {
+                datasource.setDescription( transaction, null );
+            } else if ( EXT_LOC.equals( name ) ) {
+                datasource.setExternalLocation( transaction, null );
+            } else if ( JNDI_NAME.equals( name ) ) {
                 datasource.setJndiName( transaction, null );
             } else if ( DRIVER_NAME.equals( name ) ) {
                 datasource.setDriverName( transaction, null );
