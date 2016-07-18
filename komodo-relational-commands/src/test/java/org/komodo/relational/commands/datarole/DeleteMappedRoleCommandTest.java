@@ -16,7 +16,9 @@
 package org.komodo.relational.commands.datarole;
 
 import static org.junit.Assert.assertEquals;
+
 import java.util.ArrayList;
+
 import org.junit.Test;
 import org.komodo.relational.commands.AbstractCommandTest;
 import org.komodo.relational.vdb.DataRole;
@@ -69,6 +71,18 @@ public final class DeleteMappedRoleCommandTest extends AbstractCommandTest {
 
     	candidates.add("MyMappedRole3");
         assertTabCompletion("delete-mapped-role ", candidates);
+    }
+
+    @Test( expected = AssertionError.class )
+    public void shouldFailDeletingMappedRoleThatDoesNotExist() throws Exception {
+        final String[] commands = { "workspace",
+                                    "create-vdb myVdb vdbPath",
+                                    "cd myVdb",
+                                    "add-data-role myDataRole",
+                                    "cd myDataRole",
+                                    "add-mapped-role myMappedRole1",
+                                    "delete-mapped-role bogusMappedRole" };
+        execute( commands );
     }
 
 }

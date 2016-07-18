@@ -9,8 +9,10 @@ package org.komodo.relational.datasource.internal;
 
 import static org.hamcrest.core.Is.is;
 import static org.junit.Assert.assertThat;
+
 import java.util.Arrays;
 import java.util.Properties;
+
 import org.junit.Before;
 import org.junit.Test;
 import org.komodo.core.KomodoLexicon;
@@ -33,6 +35,20 @@ public final class DatasourceImplTest extends RelationalModelTest {
     }
 
     @Test
+    public void shouldSetDescription() throws Exception {
+        String newValue = "description";
+        this.datasource.setDescription( getTransaction(), newValue );
+        assertThat( this.datasource.getDescription( getTransaction() ), is( newValue ) );
+    }
+
+    @Test
+    public void shouldSetExternalLocation() throws Exception {
+        String newValue = "/Users/elvis/blah";
+        this.datasource.setExternalLocation( getTransaction(), newValue );
+        assertThat( this.datasource.getExternalLocation( getTransaction() ), is( newValue ) );
+    }
+
+    @Test
     public void shouldSetJndiName() throws Exception {
         String newValue = "java:/jndiName";
         this.datasource.setJndiName( getTransaction(), newValue );
@@ -45,14 +61,14 @@ public final class DatasourceImplTest extends RelationalModelTest {
         this.datasource.setDriverName( getTransaction(), newValue );
         assertThat( this.datasource.getDriverName( getTransaction() ), is( newValue ) );
     }
-        
+
     @Test
     public void shouldSetProfileName() throws Exception {
         String newValue = "myConnectionProfile";
         this.datasource.setProfileName( getTransaction(), newValue );
         assertThat( this.datasource.getProfileName( getTransaction() ), is( newValue ) );
     }
-        
+
     @Test
     public void shouldSetJdbc() throws Exception {
         boolean isJdbc = false;
@@ -74,7 +90,7 @@ public final class DatasourceImplTest extends RelationalModelTest {
         this.datasource.setClassName( getTransaction(), className );
         assertThat( this.datasource.getClassName( getTransaction() ), is( className ) );
     }
-        
+
     @Test
     public void shouldHaveDefaultJdbc() throws Exception {
         assertThat( this.datasource.isJdbc( getTransaction() ), is( Datasource.DEFAULT_JDBC ) );
@@ -95,7 +111,7 @@ public final class DatasourceImplTest extends RelationalModelTest {
         String[] propNames = this.datasource.getPropertyNames( getTransaction() );
         assertThat( Arrays.asList(propNames).contains(KomodoLexicon.DataSource.JDBC), is( true ) );
     }
-    
+
     @Test
     public void shouldHaveMoreRawProperties() throws Exception {
         final String[] filteredProps = this.datasource.getPropertyNames( getTransaction() );
@@ -114,7 +130,7 @@ public final class DatasourceImplTest extends RelationalModelTest {
             }
         }
     }
-    
+
     @Test
     public void shouldHaveCorrectPrimaryType() throws Exception {
         assertThat( this.datasource.getPrimaryType( getTransaction() ).getName(), is( KomodoLexicon.DataSource.NODE_TYPE ) );
@@ -124,9 +140,15 @@ public final class DatasourceImplTest extends RelationalModelTest {
     public void shouldHaveCorrectTypeIdentifier() throws Exception {
         assertThat(this.datasource.getTypeIdentifier( getTransaction() ), is(KomodoType.DATASOURCE));
     }
-    
+
     @Test
     public void shouldExport() throws Exception {
+        final String description = "new-description";
+        this.datasource.setDescription(getTransaction(), description);
+
+        final String extLoc = "new-external-location";
+        this.datasource.setExternalLocation(getTransaction(), extLoc );
+
         this.datasource.setJdbc(getTransaction(), false);
         this.datasource.setPreview(getTransaction(), true);
         this.datasource.setProfileName( getTransaction(), "dsProfileName" );
@@ -137,9 +159,11 @@ public final class DatasourceImplTest extends RelationalModelTest {
         this.datasource.setProperty(getTransaction(), "prop2", "prop2Value");
 
         String xmlString = this.datasource.export(getTransaction(), new Properties());
-        
+
         assertThat( xmlString.contains(DS_NAME), is( true ) );
         assertThat( xmlString.contains("\t"), is( false ) );
+        assertThat( xmlString.contains( description ), is( true ) );
+        assertThat( xmlString.contains( extLoc ), is( true ) );
     }
 
     @Test
@@ -156,7 +180,7 @@ public final class DatasourceImplTest extends RelationalModelTest {
         Properties exportProps = new Properties();
         exportProps.put( ExportConstants.USE_TABS_PROP_KEY, true );
         String xmlString = this.datasource.export(getTransaction(), exportProps);
-        
+
         assertThat( xmlString.contains(DS_NAME), is( true ) );
         assertThat( xmlString.contains("\t"), is( true ) );
     }
