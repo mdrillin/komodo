@@ -17,7 +17,6 @@ package org.komodo.shell;
 
 import java.util.ArrayList;
 import java.util.List;
-
 import org.jboss.aesh.complete.CompleteOperation;
 import org.jboss.aesh.complete.Completion;
 import org.komodo.core.KEngine;
@@ -71,7 +70,7 @@ public class TabCompleter implements Completion {
     	} else if(!buffer.contains(" ")) { //$NON-NLS-1$
     		String name = buffer.toString().trim();
     		for (String cmdName : allCommandsForContext) {
-    			if (cmdName.startsWith(name.toLowerCase())) {
+    			if (cmdName.startsWith(name)) {
     				completeOperation.addCompletionCandidate(cmdName);
     			}
     		}
@@ -136,58 +135,4 @@ public class TabCompleter implements Completion {
     	}
     }
 
-//        String commonPartCandidates = mergeCandidates(completeOperation.getCompletionCandidates(), buffer);
-//        if (StringUtils.isNotBlank(commonPartCandidates)) {
-//            String tokenToCompare = "";
-//            if (buffer.contains(" ")) {
-//                tokenToCompare = buffer.substring(buffer.lastIndexOf(" ") + 1);
-//            } else {
-//                tokenToCompare = buffer;
-//            }
-//            completeOperation.getCompletionCandidates().clear();
-//            if (StringUtils.isBlank(tokenToCompare) || commonPartCandidates.startsWith(tokenToCompare)) {
-//                if (buffer.contains(" ")) {
-//                    completeOperation.addCompletionCandidate(buffer.substring(0, buffer.lastIndexOf(" "))
-//                            .trim() + " " + commonPartCandidates);
-//                } else {
-//                    completeOperation.addCompletionCandidate(commonPartCandidates);
-//                }
-//
-//            } else {
-//                completeOperation.addCompletionCandidate(commonPartCandidates);
-//            }
-//
-//            completeOperation.doAppendSeparator(false);
-//        }
-
-    /**
-     * Merge candidates.
-     *
-     * @param completionCandidates the completion candidates
-     * @param buffer the buffer
-     * @return the string
-     */
-//    private String mergeCandidates(List<String> completionCandidates, String buffer) {
-//        if (completionCandidates.size() > 1) {
-//            int indexOfDifference = StringUtils.indexOfDifference(completionCandidates
-//                    .toArray(new String[completionCandidates.size()]));
-//            if (indexOfDifference == -1) {
-//                return completionCandidates.get(0);
-//            } else {
-//                String partToCompare = "";
-//                String commonPart = completionCandidates.get(0).substring(0, indexOfDifference);
-//                if (commonPart.startsWith(buffer)) {
-//                    partToCompare = buffer;
-//                } else {
-//                    partToCompare = buffer.substring(buffer.lastIndexOf(" ") + 1);
-//                }
-//                if (partToCompare.length() != indexOfDifference) {
-//                    return commonPart;
-//                }
-//
-//            }
-//        }
-//        return "";
-//
-//    }
 }

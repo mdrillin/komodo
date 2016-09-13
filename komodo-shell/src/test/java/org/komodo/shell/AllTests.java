@@ -67,6 +67,7 @@ import org.komodo.shell.commands.WorkspaceStatusPropertyTest;
                        ShowPropertyCommandTest.class,
                        ShowStatusCommandTest.class,
                        ShowSummaryCommandTest.class,
+                       TabCompleterTest.class,
                        UnsetPropertyCommandTest.class,
                        WorkspaceCommandTest.class,
                        WorkspaceStatusPropertyTest.class } )
