@@ -1119,11 +1119,16 @@ public class KomodoTeiidService extends KomodoService {
 
             // Check for existence of Model and replace if found
             Model[] models = vdb.getModels(uow, modelName);
+            Model theModel = null;
             for(Model model : models) {
-                model.remove(uow);
+                theModel = model;
             }
-            Model newModel = vdb.addModel(uow, modelName);
-            newModel.setModelDefinition(uow, modelDdl);
+            if(theModel!=null) {
+                theModel.setModelDefinition(uow, modelDdl);
+            } else {
+                Model newModel = vdb.addModel(uow, modelName);
+                newModel.setModelDefinition(uow, modelDdl);
+            }
 
             KomodoStatusObject kso = new KomodoStatusObject("Update Vdb Status"); //$NON-NLS-1$
             kso.addAttribute(vdbName, "Successfully updated"); //$NON-NLS-1$

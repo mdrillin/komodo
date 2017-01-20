@@ -47,6 +47,7 @@ import java.io.InputStream;
 import java.net.URI;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Properties;
 import javax.ws.rs.DELETE;
 import javax.ws.rs.GET;
 import javax.ws.rs.POST;
@@ -522,12 +523,21 @@ public final class KomodoVdbService extends KomodoService {
             model.setMetadataType( uow, newMetadataType );
         }
         
-        // model definition
-        final String newDdl = restVdbModel.getDdl();
-        
-        if ( !Objects.equal( newDdl, model.getModelDefinition( uow ) ) ) {
-            model.setModelDefinition( uow, newDdl );
-        }
+//        // new model definition
+//        final String newDdl = restVdbModel.getDdl();
+//        
+//        // old model definition
+//        Properties properties = new Properties();
+//        byte[] ddlBytes = model.export(uow, properties);
+//        String oldDdl;
+//        if (ddlBytes == null)
+//            oldDdl = EMPTY_STRING;
+//        else
+//            oldDdl = new String(ddlBytes);
+//        
+//        if ( !Objects.equal( newDdl, oldDdl ) ) {
+//            model.setModelDefinition( uow, newDdl );
+//        }
         
         // Set new properties
         for(RestProperty newProp : newProperties) {
